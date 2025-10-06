@@ -5,8 +5,8 @@ import java.util.Scanner;
 
 public class Client {
     public static void main(String[] args) throws Exception{
-        String host = "127.0.0.1";
-        int port = 8888;
+        String host = "csa1.bu.edu";
+        int port = 58500;
         Socket socket = new Socket(host, port);
         OutputStream os = socket.getOutputStream();
         DataOutputStream dos = new DataOutputStream(os);

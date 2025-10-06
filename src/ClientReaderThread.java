@@ -1,9 +1,12 @@
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 
-public class ServerThread extends Thread {
+public class ClientReaderThread extends Thread{
     private final Socket socket;
-    public ServerThread(Socket socket){
+    public ClientReaderThread(Socket socket){
         this.socket = socket;
     }
 
@@ -17,23 +20,14 @@ public class ServerThread extends Thread {
                 try {
                     String meg = dis.readUTF();
                     System.out.println(meg);
-                    echo(meg);
-                } catch (Exception e){
-                    System.out.println(socket.getRemoteSocketAddress()+" is off-line.");
+                }catch (Exception e){
                     dis.close();
                     socket.close();
                     break;
                 }
             }
-        } catch (IOException e) {
+        }catch (IOException e){
             throw new RuntimeException(e);
         }
-    }
-
-    private void echo(String meg) throws IOException {
-        OutputStream os = socket.getOutputStream();
-        DataOutputStream dos = new DataOutputStream(os);
-        dos.writeUTF(meg);
-        dos.flush();
     }
 }

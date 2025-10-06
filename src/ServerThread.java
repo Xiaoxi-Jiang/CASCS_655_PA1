@@ -9,7 +9,7 @@ public class ServerThread extends Thread {
 
     @Override
     public void run() {
-        InputStream is = null;
+        InputStream is;
         try {
             is = socket.getInputStream();
             DataInputStream dis = new DataInputStream(is);

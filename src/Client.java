@@ -1,28 +1,41 @@
-import java.io.DataOutputStream;
-import java.io.OutputStream;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class Client {
     public static void main(String[] args) throws Exception{
-        String host = "csa1.bu.edu";
-        int port = 58500;
+        Scanner sc = new Scanner(System.in);
+        String host;
+        int port;
+        if (args.length >= 2) {
+            host = args[0];
+            port = Integer.parseInt(args[1]);
+        } else {
+            System.out.println("Please enter the hostname:");
+            host = sc.nextLine();
+            System.out.println("Please enter the port number:");
+            port = Integer.parseInt(sc.nextLine());
+        }
+
         Socket socket = new Socket(host, port);
         new ClientReaderThread(socket).start();
-        OutputStream os = socket.getOutputStream();
-        DataOutputStream dos = new DataOutputStream(os);
-        Scanner sc = new Scanner(System.in);
-        System.out.println("send messages or type 'exit' to quit");
+
+        BufferedWriter out = new BufferedWriter(
+                new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
+        System.out.println("Server connected, send messages or type 'exit' to quit");
 
         while(true) {
-            String meg = sc.nextLine();
-            if("exit".equals(meg)){
-            dos.close();
-            socket.close();
-            break;
+            String msg = sc.nextLine();
+            if("exit".equalsIgnoreCase(msg)){
+                out.close();
+                socket.close();
+                break;
             }
-            dos.writeUTF(meg);
-            dos.flush();
+            out.write(msg);
+            out.write('\n');
+            out.flush();
         }
     }
 }

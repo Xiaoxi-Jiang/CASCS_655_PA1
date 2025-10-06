@@ -1,7 +1,7 @@
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class ClientReaderThread extends Thread{
     private final Socket socket;
@@ -11,22 +11,17 @@ public class ClientReaderThread extends Thread{
 
     @Override
     public void run() {
-        InputStream is;
         try {
-            is = socket.getInputStream();
-            DataInputStream dis = new DataInputStream(is);
-            while (true){
-                try {
-                    String meg = dis.readUTF();
-                    System.out.println(meg);
-                }catch (Exception e){
-                    dis.close();
-                    socket.close();
-                    break;
-                }
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+            String line;
+            while ((line = in.readLine()) != null) {
+                System.out.println(line);
             }
-        }catch (IOException e){
-            throw new RuntimeException(e);
+            in.close();
+            socket.close();
+        } catch (Exception e){
+            try { socket.close(); } catch (Exception ignore) {}
         }
     }
 }
